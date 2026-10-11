@@ -1,0 +1,1 @@
+{"model": "aksaranet", "optimizer": "adamw", "lr": 0.003, "weight_decay": 0.01, "batch_size": 64, "epochs": 25, "patience": 0, "schedule": "onecycle", "augment": "strong", "label_smoothing": 0.1}

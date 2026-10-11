@@ -1,0 +1,15 @@
+**1. Look at the data before the model.** The 12,000 images are ~29 augmented copies of each of only 420 hand-drawn characters. Splitting by drawing instead of by image changes the measured accuracy of an MLP from 95.3 % to 52.7 % and of the lecture CNN from 98.1 % to 64.7 %. All our numbers come from 5-fold cross-validation grouped by drawing, with validation folds for every decision.
+
+**2. Architecture matters most.** Under that protocol: linear 42.1 %, MLP 52.7 %, LeNet-5 64.9 %, lecture CNN 64.7 %, HOG + SVM 74.5 %, reference Kaggle CNN 86.6 % (88.7 % with its own recipe), small ResNet 97.2 %, **AksaraNet 98.5 %**. The gain over the reference model comes from batch normalisation and from replacing the Flatten + Dense head by global average pooling, with 7× fewer parameters (296 k vs 2.08 M). Without batch normalisation the same network reaches only 48 % in the same budget.
+
+**3. Learning strategy.** Optimiser and learning rate interact strongly: plain SGD works only at lr 0.1, while Adam / AdamW / RMSprop are within about one point of their best from 10⁻⁴ to 10⁻². Batch size, dropout, L2, label smoothing and the schedule each move validation accuracy by a few tenths of a point, inside fold-to-fold noise. Combining AdamW, a one-cycle schedule and strong online augmentation lifts validation accuracy from 99.3 % to 100 % on the tuning folds.
+
+**4. Final model.** **99.41 % ± 0.78** test accuracy (mean ± sd over 5 folds, 3 seeds each; macro-F1 99.40 %); **99.64 %** as a 3-seed ensemble, 95 % cluster-bootstrap interval [99.02, 99.99]. All 43 remaining errors come from 4 of the 420 drawings, 31 of them from a single *na* read as *ka*. On the original Kaggle split the model scores 99.94 % (ensemble 100 %), against 96.5 % published and 96.8 % for our re-implementation of the reference notebook.
+
+**5. Generalisation.** On writers that were completely held out, AksaraNet keeps 98.7 to 100 % while the reference CNN drops to 43 to 95 %. Augmentation and the weight-free head, not extra capacity, are what make the model robust to a new hand.
+
+**6. Application.** Letting the classifier decide which strokes belong to one glyph (dynamic programming over connected components) reads 7 of 8 photographed words and 27 of 28 glyphs; the reference component-wise segmentation reads 5 of 8.
+
+**Limitations.** (i) Only 420 drawings by about five writers, three of them with ~20 drawings each: the unseen-writer scores have wide uncertainty. (ii) Accuracy is at the ceiling of this dataset, so the tuning experiments cannot rank the good configurations; a harder benchmark is needed. (iii) Only the 20 base characters are covered: no *sandhangan* (vowel marks), *pasangan* (conjuncts) or numerals, so this is not yet a full Javanese OCR. (iv) Word reading was tested on eight clean, well-spaced words only. (v) Writer tags were inferred from file names.
+
+**Future work.** Collect glyphs from more writers; extend the label set to sandhangan and pasangan; replace segmentation + classification by a sequence model (CNN + recurrent layers with CTC loss) trained on whole words; compare with transfer learning from a pretrained backbone.

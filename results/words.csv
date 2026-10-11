@@ -1,0 +1,9 @@
+word,glyphs,component-wise (reference approach),DP grouping (ours),glyphs correct (ours),word correct
+dhahara,3,dhahara,dhahara,3,True
+jawanagara,5,jawaranagara,jawanagara,5,True
+jayabaya,4,jayaparaya,jayanyaya,3,False
+malaca,3,malaca,malaca,3,True
+nyala,2,ngagala,nyala,2,True
+palawa,3,palawa,palawa,3,True
+paratama,4,paratama,paratama,4,True
+ramayana,4,ramayana,ramayana,4,True
